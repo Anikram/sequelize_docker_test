@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-// const db = require('../database').sequelize;
-const Person = require('../db/database').Person;
+// const db = require('../db/models/index').sequelize;
+const User = require('../db/models').User;
 
 router.get("/all", function(req, res) {
-  Person.findAll()
+  User.findAll()
     .then( people => {
       res.status(200).json(people);
     })
@@ -14,7 +14,7 @@ router.get("/all", function(req, res) {
 });
 
 router.get("/:id", function(req, res) {
-  Person.findByPk(req.params.id)
+  User.findByPk(req.params.id)
     .then( person => {
       res.status(200).json(person);
     })
@@ -25,7 +25,7 @@ router.get("/:id", function(req, res) {
 
 router.put("/", function(req, res) {
   console.log(req)
-  Person.create({
+  User.create({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     id: req.body.id
@@ -39,7 +39,7 @@ router.put("/", function(req, res) {
 });
 
 router.delete("/:id", function(req, res) {
-  Person.destroy({
+  User.destroy({
     where: {
       id: req.params.id
     }

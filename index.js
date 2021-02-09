@@ -1,12 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const app = express();
-const peopleRouter = require('./routes/people');
+const usersRouter = require('./routes/users');
 const dbConnect = require('./db/dbConnect');
-const db = require('./db/database').sequelize;
+const db = require('./db/models/index').sequelize;
 
 app.use(express.json())
-app.use('/people',peopleRouter)
+app.use('/users',usersRouter)
 
 app.get('/index', async (req,res) => {
   res.json({message: 'Hello!'})
