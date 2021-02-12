@@ -1,2 +1,6 @@
 node_modules
 .env
+utils/id_rsa*
+request.rest
+requests.rest
+pgdata
