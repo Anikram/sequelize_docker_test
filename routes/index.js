@@ -12,9 +12,9 @@ router.get("/players",passport.authenticate('jwt',{session: false}), playersRout
 
 //auth routes
 router.post('/signup', authRoutes.signUp)
+router.get('/logout', authRoutes.logout)
 router.post('/login', authRoutes.signIn)
-router.get('/is-verified', authRoutes.isVerified)
-// router.post('/refreshToken', authRoutes.refreshTokens)
+router.post('/refresh_token', authRoutes.refreshTokens)
 
 
 module.exports = router;

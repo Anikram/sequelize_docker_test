@@ -13,7 +13,6 @@ const options = {
 }
 
 const strategy = new JwtStrategy(options, (payload, done) => {
-  console.log(payload)
   Player.findOne({where: {id: payload.sub}})
     .then(player => {
       return player ? done(null, player) : done(null, false)
@@ -24,13 +23,4 @@ const strategy = new JwtStrategy(options, (payload, done) => {
 
 module.exports = (passport) => {
   passport.use('jwt',strategy)
-
-  // passport.serializeUser((user, done) => {
-  //   done(null, user.id)
-  // })
-  // passport.deserializeUser((userId, done) => {
-  //   User.findById(userId).then(user => {
-  //     done(null, user)
-  //   }).catch(err => done(err))
-  // })
 };

@@ -5,7 +5,9 @@ const {v4: uuidv4} = require('uuid');
 const Token = require('../db/models').Token;
 
 const PRIV_KEY = fs.readFileSync(path.join(__dirname, '/id_rsa_private1.pem'), 'utf8')
-const PUB_KEY = fs.readFileSync(path.join(__dirname, '/id_rsa_pub1.pem'), 'utf8')
+// const PUB_KEY = fs.readFileSync(path.join(__dirname, '/id_rsa_pub1.pem'), 'utf8')
+const REF_PRIV_KEY = fs.readFileSync(path.join(__dirname, '/id_rsa_private.pem'), 'utf8')
+const REF_PUB_KEY = fs.readFileSync(path.join(__dirname, '/id_rsa_pub.pem'), 'utf8')
 
 module.exports = {
   generateAccessToken(user) {
@@ -24,30 +26,13 @@ module.exports = {
     }
   },
 
-  generateRefreshToken() {
-    const expiresIn = '2m';
-    const payload = {
-      id: uuidv4(),
-      type: 'refresh'
-    }
-    const options = {expiresIn}
-    const signedToken = jsonwebtoken.sign(payload, PRIV_KEY, {expiresIn, algorithm: 'RS256'})
-
-    return {
-      id: payload.id,
-      token: 'Bearer ' + signedToken,
-      expires: expiresIn
-    }
-
+  generateRefreshToken(user) {
+    return jsonwebtoken.sign({sub: user.id}, REF_PRIV_KEY, {
+      expiresIn: "7d",
+      encoding: 'utf8', algorithm: 'RS256'})
   },
 
-  replaceDbRefreshToken(tokenId, userId) {
-    Token.findOne({where: {userId: userId}}).then(token => {
-      token.destroy().then(() => {Token.create({tokenId, userId})})
-    })
-  },
-
-  verifyToken(token) {
-    return jsonwebtoken.verify(token, PUB_KEY)
+  verifyRefreshToken(token) {
+    return jsonwebtoken.verify(token,REF_PUB_KEY)
   }
 };

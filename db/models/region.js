@@ -3,28 +3,22 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class Token extends Model {
+  class Region extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Region.hasMany(models.Game, {as: 'games'})
     }
   };
-  Token.init({
-    id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
-      allowNull: false,
-      primaryKey: true
-    },
-    tokenId: DataTypes.UUID,
-    userId: DataTypes.UUID
+  Region.init({
+    name: DataTypes.STRING,
+    cities: DataTypes.JSONB
   }, {
     sequelize,
-    modelName: 'Token',
+    modelName: 'Region',
   });
-  return Token;
+  return Region;
 };

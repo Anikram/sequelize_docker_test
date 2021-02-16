@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Player.hasMany(models.Game, {as: "games"})
     };
     static hashPassword(password) {
       const salt = crypto.randomBytes(32).toString('hex');
@@ -26,14 +26,12 @@ module.exports = (sequelize, DataTypes) => {
     };
     static validPassword(password, hash, salt) {
       const hashVerify = crypto.pbkdf2Sync(password,salt,10000,64,'sha512').toString('hex');
-      // console.log(hash + " <=> " + hashVerify)
-
       return hash === hashVerify
     }
   };
   Player.init({
     id: {
-      type: DataTypes.UUID,
+      type: DataTypes.UUIDV4,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
       primaryKey: true
