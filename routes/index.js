@@ -5,14 +5,10 @@ const playersRoutes = require('./players');
 const authRoutes = require('./auth')
 const gamesRoutes = require('./games')
 
-//players routes
-router.get("/players", passport.authenticate('jwt', {session: false}), playersRoutes.listPlayers)
-router.get("/top5players", passport.authenticate('jwt', {session: false}), playersRoutes.top5Players)
-router.get('/player',passport.authenticate('jwt', {session: false}),playersRoutes.playerProfile)
-router.put('/playerNewTopScore',passport.authenticate('jwt', {session: false}),playersRoutes.updatePlayerTopScore)
-// router.get("/:id", playersRoutes.getUser)
-// router.post("/", playersRoutes.createUser)
-// router.delete("/:id",playersRoutes.deleteUser)
+const isAuth = (_req,_res,next) => {
+  passport.authenticate('jwt', {session: false})
+  next()
+}
 
 //auth routes
 router.post('/signup', authRoutes.signUp)
@@ -20,13 +16,18 @@ router.get('/logout', authRoutes.logout)
 router.post('/login', authRoutes.signIn)
 router.post('/refresh_token', authRoutes.refreshTokens)
 
-//games routes
-router.get('/top10games', gamesRoutes.top10GamesForPlayer)
-router.get('/game', gamesRoutes.getGame) //!??
-router.post('/createGame', gamesRoutes.createGame) //!??
-router.put('/updateGame', gamesRoutes.updateGame)
-router.delete('/deleteGame', gamesRoutes.deleteGame)
+//players routes
+router.get("/players",isAuth, playersRoutes.listPlayers)
+router.get("/top5players", isAuth, playersRoutes.top5Players)
+router.get('/player',isAuth,playersRoutes.playerProfile)
+router.put('/playerNewTopScore',isAuth,playersRoutes.updatePlayerTopScore)
 
+//games routes
+router.get('/top10games', isAuth, gamesRoutes.getTop10Games)
+router.get('/game/:game_id', isAuth, gamesRoutes.getGame) //!??
+router.post('/createGame', isAuth,gamesRoutes.createGame)
+router.put('/updateGame', isAuth, gamesRoutes.updateGame)
+router.delete('/deleteGame/:game_id', isAuth, gamesRoutes.deleteGame)
 
 module.exports = router;
 

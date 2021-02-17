@@ -17,58 +17,58 @@ module.exports = {
 
     newPlayer.save().then(player => {
       const jwt = generateAccessToken(player)
-      res.json({success: true, token: jwt.token, expiresIn: jwt.expires})
-    }).catch(err => res.status(500).send({success: false, errors: err.errors.map(e => e.message)}))
+      res.status(201).json({success: true, token: jwt.token, expiresIn: jwt.expires})
+    }).catch(err => res.status(500).send({statusCode: 0, errors: err}))
   },
 
   //login route
   async signIn(req, res) {
-    Player.findOne({where: {email: req.body.email}}).then(player => {
+    Player.findOne({where: {email: req.body.email}})
+      .then(player => {
+        if (!player) {
+          console.log('404 - No user with such credentials.')
+          return res.status(404).json({statusCode: 1, error: 'No user with such credentials.'})
+        }
 
-      if (!player) {
-        res.json({message: 'No user with such credentials.'})
-      }
+        const isValid = Player.validPassword(req.body.password, player.hash, player.salt);
 
-      const isValid = Player.validPassword(req.body.password, player.hash, player.salt);
-
-      if (isValid) {
-        sendRefreshToken(res, generateRefreshToken(player))
-        const jwt = generateAccessToken(player)
-        res.json({success: true, token: jwt.token, expiresIn: jwt.expires})
-      } else {
-        res.json({message: 'Email or password are incorrect.'})
-      }
-    })
-      .catch(err => res.status(500).send({success: false, err}))
+        if (isValid) {
+          sendRefreshToken(res, generateRefreshToken(player)) //set refresh token into cookies
+          const jwt = generateAccessToken(player)
+          res.status(200).json({statusCode: 0, accessToken: jwt.token})
+        } else {
+          console.log('401 - Email or password are incorrect.')
+          return res.status(401).json({statusCode: 1, error: 'Email or password are incorrect.'})
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        return res.status(500).json({statusCode: 1, error: err.message})
+      })
   },
 
   logout(req, res) {
     sendRefreshToken(res, "")
-    res.json({statusCode: 0, message: 'Logout successfully.'})
+    res.status(200).json({statusCode: 0, message: 'Logged out successfully.'})
   },
 
   async refreshTokens(req, res) {
     const token = req.cookies.jrt
 
-    if (!token) {
-      return res.send({ok: false, accessToken: ''})
-    }
+    if (!token)  return res.status(401).json({statusCode: 1, accessToken: '', error: 'No refresh token is provided'})
 
     let payload;
 
     try {
       payload = await verifyRefreshToken(token)
-      console.log(payload)
     } catch (err) {
-      console.error(err)
-      return res.send({ok: false, accessToken: ''})
+      return res.status(401).json({statusCode: 1, accessToken: '', error: `Refresh token invalid: ${err.message}`})
     }
-
 
     const player = await Player.findOne({where: {id: payload.sub}})
 
     if (!player) {
-      return res.send({ok: false, accessToken: ''})
+      return res.status(404).json({statusCode: 1, accessToken: '', error: 'Player not found'})
     }
 
     // if (player.tokenVersion !== payload.tokenVersion) {
@@ -76,7 +76,6 @@ module.exports = {
     // }
 
     sendRefreshToken(res, generateRefreshToken(player))
-
-    return res.send({ok: true, accessToken: generateAccessToken(player)})
+    return res.status(200).json({statusCode: 0, accessToken: generateAccessToken(player)})
   }
 };

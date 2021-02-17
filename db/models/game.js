@@ -46,6 +46,16 @@ module.exports = (sequelize, DataTypes) => {
         key: 'name'
       }
     },
+    distance: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 0
+    },
+    win: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     finished: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
