@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Player.hasMany(models.Game, {foreignKey: "player_id", targetKey: 'id'})
+      Player.hasMany(models.Game, {foreignKey: "player_id", targetKey: 'id', as:'games'})
     };
     static hashPassword(password) {
       const salt = crypto.randomBytes(32).toString('hex');

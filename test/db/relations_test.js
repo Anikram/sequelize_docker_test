@@ -6,13 +6,25 @@ let testUserId
 let testRegionId
 //
 Player.findOne({where: {username: 'alexo'}}).then(user => {
-  user.createGame({region_name: 'europe', player_id: testUserId }).then( res => {
-    console.log(res)
-  })
+  // user.createGame({region_name: 'europe', player_id: testUserId }).then( res => {
+  //   console.log(res)
+  // })
+
+  testUserId=user.id
 
   // Game.create({region_id: 1, player_id: testUserId }).then(game => {console.log(game)})
 
-  // Player.findByPk(testUserId, {include: 'games'}).then(async obj => {console.log(await obj.getGames())})
+  Player.findByPk(testUserId, {include: 'games'})
+    .then(async user => {
+      const games = await user.getGames()
+
+      const result = {...user, games: [...games]}
+
+      console.log(result)
+    })
+    .catch(err => {
+      console.log(err)
+    })
 })
 
 //
