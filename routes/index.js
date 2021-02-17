@@ -5,7 +5,8 @@ const playersRoutes = require('./players');
 const authRoutes = require('./auth')
 
 //users routes
-router.get("/players",passport.authenticate('jwt',{session: false}), playersRoutes.listUsers)
+router.get("/players",passport.authenticate('jwt',{session: false}), playersRoutes.listPlayers)
+router.get("/top5players",passport.authenticate('jwt',{session: false}), playersRoutes.top5Players)
 // router.get("/:id", playersRoutes.getUser)
 // router.post("/", playersRoutes.createUser)
 // router.delete("/:id",playersRoutes.deleteUser)

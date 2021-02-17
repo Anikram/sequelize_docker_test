@@ -10,10 +10,16 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Region.hasMany(models.Game, {as: 'games'})
+      Region.hasMany(models.Game, {foreignKey: "region_name", sourceKey: 'name'})
     }
   };
   Region.init({
+    id: {
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+      type: DataTypes.INTEGER
+    },
     name: DataTypes.STRING,
     cities: DataTypes.JSONB
   }, {
